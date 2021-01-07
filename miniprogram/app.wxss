@@ -1,8 +1,10 @@
 /**app.wxss**/
+@import 'dist/common/index.wxss';
+
 .container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: normal;
   box-sizing: border-box;
 } 
 
@@ -24,6 +26,9 @@ page {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica,
+  Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei',
+  sans-serif;
 }
 
 .userinfo, .uploader, .tunnel {

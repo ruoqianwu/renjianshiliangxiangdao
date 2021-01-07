@@ -1,3 +1,5 @@
 # 人间食粮向导
-- function 1
-put all the articles into a grid
+## 介绍
+* 为关联公众号“人间食粮向导”开发的小程序
+* 为读者展示公众号精选历史文章
+* 向下拉动可刷新

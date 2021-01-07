@@ -1,118 +1,72 @@
 //index.js
 const app = getApp()
-
+const common = require('../../utils/common.js')
 Page({
   data: {
-    avatarUrl: './user-unlogin.png',
-    userInfo: {},
-    logged: false,
-    takeSession: false,
-    requestResult: ''
+    list: [],
+    display: [],
+    extraClasses: ''
   },
 
   onLoad: function() {
+    wx.stopPullDownRefresh();
     if (!wx.cloud) {
-      wx.redirectTo({
-        url: '../chooseLib/chooseLib',
-      })
-      return
-    }
-
-    // 获取用户信息
-    wx.getSetting({
-      success: res => {
-        if (res.authSetting['scope.userInfo']) {
-          // 已经授权，可以直接调用 getUserInfo 获取头像昵称，不会弹框
-          wx.getUserInfo({
-            success: res => {
-              this.setData({
-                avatarUrl: res.userInfo.avatarUrl,
-                userInfo: res.userInfo
-              })
-            }
-          })
-        }
-      }
-    })
-  },
-
-  onGetUserInfo: function(e) {
-    if (!this.data.logged && e.detail.userInfo) {
-      this.setData({
-        logged: true,
-        avatarUrl: e.detail.userInfo.avatarUrl,
-        userInfo: e.detail.userInfo
+      console.error('请使用 2.2.3 或以上的基础库以使用云能力')
+    } else {
+      wx.cloud.init({
+        // env 参数说明：
+        //   env 参数决定接下来小程序发起的云开发调用（wx.cloud.xxx）会默认请求到哪个云环境的资源
+        //   此处请填入环境 ID, 环境 ID 可打开云控制台查看
+        //   如不填则使用默认环境（第一个创建的环境）
+        env: 'home-2gkxjfu87d968e84',
+        traceUser: true,
       })
     }
-  },
 
-  onGetOpenid: function() {
-    // 调用云函数
+    if (Object.keys(app.globalData.access).length === 0) {
+      common.refreshAccessToken().then( res => {
+        app.globalData.access = res;
+      })
+    }
     wx.cloud.callFunction({
-      name: 'login',
+      name: 'fetchArticles',
       data: {},
       success: res => {
-        console.log('[云函数] [login] user openid: ', res.result.openid)
-        app.globalData.openid = res.result.openid
-        wx.navigateTo({
-          url: '../userConsole/userConsole',
-        })
+        let arts = [];
+        console.log(res.result.data.length);
+        res.result.data.forEach(item => {
+          if (item.thumb_url) {
+            arts.push(item);
+          }
+        });
+        this.setData({
+          'list': arts
+        });
+        this.setData({
+          'display': common.shuffle(arts)
+        }) 
+        console.log(this.data)
       },
       fail: err => {
-        console.error('[云函数] [login] 调用失败', err)
-        wx.navigateTo({
-          url: '../deployFunctions/deployFunctions',
-        })
+        console.log(err)
       }
     })
-  },
-
-  // 上传图片
-  doUpload: function () {
-    // 选择图片
-    wx.chooseImage({
-      count: 1,
-      sizeType: ['compressed'],
-      sourceType: ['album', 'camera'],
-      success: function (res) {
-        wx.showLoading({
-          title: '上传中',
-        })
-
-        const filePath = res.tempFilePaths[0]
-        
-        // 上传图片
-        const cloudPath = `my-image${filePath.match(/\.[^.]+?$/)[0]}`
-        wx.cloud.uploadFile({
-          cloudPath,
-          filePath,
-          success: res => {
-            console.log('[上传文件] 成功：', res)
-
-            app.globalData.fileID = res.fileID
-            app.globalData.cloudPath = cloudPath
-            app.globalData.imagePath = filePath
-            
-            wx.navigateTo({
-              url: '../storageConsole/storageConsole'
-            })
-          },
-          fail: e => {
-            console.error('[上传文件] 失败：', e)
-            wx.showToast({
-              icon: 'none',
-              title: '上传失败',
-            })
-          },
-          complete: () => {
-            wx.hideLoading()
-          }
-        })
-      },
-      fail: e => {
-        console.error(e)
-      }
+    
+    this.setData({
+      extraClasses: 'show'
     })
-  },
+   },
 
-})
+   bindViewTap: function(e) {
+    let link = e.currentTarget.dataset.id;
+    encodeURIComponent(this.data.display[link].url)
+    console.log(this.data.display[link].url)
+     wx.navigateTo({
+       url: '../webview/webview?source=' + encodeURIComponent(this.data.display[link].url), 
+     })
+   },
+
+   onPullDownRefresh: function() {
+     this.onLoad();
+   }
+});

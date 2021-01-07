@@ -1,3 +1,10 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "van-button": "../../dist/button/index",
+    "van-image": "../../dist/image/index",
+    "van-row": "../../dist/row/index",
+    "van-col": "../../dist/col/index"
+  },
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
 }
