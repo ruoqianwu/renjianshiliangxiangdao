@@ -9,13 +9,20 @@ page {
 
 .header {
   border: 2px none lightgray;
+  
 }
 
 .header-text {
-  font-size: 18px;
+  font-size: 19px;
   color: rgba(4, 99, 181);
   letter-spacing:2px;
   font-weight: bold;
+}
+
+.sub-header {
+  font-size: 15px;
+  color: rgba(4, 98, 181, 0.452);
+  text-align: center;
 }
 
 #icon {

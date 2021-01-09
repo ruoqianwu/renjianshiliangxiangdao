@@ -11,11 +11,17 @@
       </van-col>
       <van-col span="10"><text class="header-text">食粮抽抽乐</text></van-col>
     </van-row>
+    <view class='sub-header' style="margin-top: 5px">
+      <text>关注粮导公众号即可收获长期好粮</text>
+    </view>
+    
   </view>
+
+
   
   <view class="random-articles">
 
-    <view class="random-art {{extraClasses}}" bindtap="bindViewTap" data-id="0" style="transition-delay: 1s">
+    <view class="random-art {{extraClasses}}" bindtap="bindViewTap" data-id="0" style="transition-delay: 1s; margin-top: 15px">
       <view class="image-container">
         <van-image width="100%" height="auto" fit="widthFix" src="{{display[0].thumb_url}}"/>
       </view>
@@ -58,5 +64,6 @@
     </view>
 
   </view>
+
 
 </view>

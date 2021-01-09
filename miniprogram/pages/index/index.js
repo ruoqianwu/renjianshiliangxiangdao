@@ -1,6 +1,15 @@
 //index.js
 const app = getApp()
 const common = require('../../utils/common.js')
+const innerAudioContext = wx.createInnerAudioContext();
+innerAudioContext.src = 'cloud://home-2gkxjfu87d968e84.686f-home-2gkxjfu87d968e84-1304506185/bubble.mp3';
+innerAudioContext.onPlay(() => {  // 监听音频播放事件
+  console.log('开始播放')
+})
+innerAudioContext.onError((res) => { // 监听音频播放错误事件
+  console.log(res.errMsg)
+  console.log(res.errCode)
+})
 Page({
   data: {
     list: [],
@@ -9,7 +18,8 @@ Page({
   },
 
   onLoad: function() {
-    wx.stopPullDownRefresh();
+    wx.stopPullDownRefresh(
+    );
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
     } else {
@@ -28,6 +38,11 @@ Page({
         app.globalData.access = res;
       })
     }
+
+    wx.showLoading({
+      title: "努力找粮中"
+    });
+
     wx.cloud.callFunction({
       name: 'fetchArticles',
       data: {},
@@ -46,6 +61,7 @@ Page({
           'display': common.shuffle(arts)
         }) 
         console.log(this.data)
+        wx.hideLoading();
       },
       fail: err => {
         console.log(err)
@@ -67,6 +83,7 @@ Page({
    },
 
    onPullDownRefresh: function() {
+    innerAudioContext.play();
      this.onLoad();
    }
 });
